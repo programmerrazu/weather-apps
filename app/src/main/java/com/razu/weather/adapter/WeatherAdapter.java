@@ -37,7 +37,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.WeatherH
         Weather weather = weatherList.get(position);
 
         holder.tvCityName.setText(weather.getName());
-        holder.tvWeathers.setText("Clear Sky");
+        holder.tvWeathers.setText(weather.getWeathersList().get(0).getMain());
         holder.tvTemp.setText(String.valueOf(weather.getMain().getTemp()));
         holder.tvTempUnit.setText("C");
     }

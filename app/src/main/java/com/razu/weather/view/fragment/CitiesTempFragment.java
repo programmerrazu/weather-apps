@@ -12,11 +12,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.razu.weather.Apps;
 import com.razu.weather.R;
@@ -31,20 +32,33 @@ import com.razu.weather.viewModel.WeatherViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class CitiesTempFragment extends Fragment {
 
     private static final String TAG = "CitiesTempFragment";
     private Context context;
     private WeatherViewModel weatherViewModel;
     private List<Weather> weatherList;
-    private RecyclerView rvWeather;
     private WeatherAdapter weatherAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private ProgressDialog progressDialog;
-    private SwipeRefreshLayout srlWeather;
-    private RelativeLayout rlWeatherContainer, rlWeatherNoNetMsg;
     private boolean dataLoaderStatus = true;
     private FragmentChanger changer;
+
+    @Bind(R.id.rl_weather_container)
+    RelativeLayout rlWeatherContainer;
+
+    @Bind(R.id.rl_weather_no_net_msg)
+    RelativeLayout rlWeatherNoNetMsg;
+
+    @Bind(R.id.srl_weather)
+    SwipeRefreshLayout srlWeather;
+
+    @Bind(R.id.recycler_view_weather)
+    RecyclerView rvWeather;
 
     public CitiesTempFragment() {
 
@@ -61,8 +75,10 @@ public class CitiesTempFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_cities_temp, container, false);
         context = container.getContext();
-        return inflater.inflate(R.layout.fragment_cities_temp, container, false);
+        ButterKnife.bind(this, view);
+        return view;
     }
 
     @Override
@@ -74,19 +90,17 @@ public class CitiesTempFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(null);
+        toolbar.setNavigationOnClickListener(null);
+
         weatherViewModel = ViewModelProviders.of(getActivity(), new WeatherViewModelFactory(getActivity().getApplication(),
                 new WeatherRepository(getActivity().getApplication()))).get(WeatherViewModel.class);
 
         progressDialog = new ProgressDialog(context);
         Apps.dataLoaderStart(progressDialog, getString(R.string.waiting_msg), true);
-
-        rlWeatherContainer = (RelativeLayout) view.findViewById(R.id.rl_weather_container);
-        rlWeatherNoNetMsg = (RelativeLayout) view.findViewById(R.id.rl_weather_no_net_msg);
-        srlWeather = (SwipeRefreshLayout) view.findViewById(R.id.srl_weather);
         srlWeather.setColorSchemeResources(R.color.pink, R.color.indigo, R.color.lime);
-        TextView tvEventRetry = (TextView) view.findViewById(R.id.tv_weather_retry);
 
-        rvWeather = (RecyclerView) view.findViewById(R.id.recycler_view_weather);
         layoutManager = new LinearLayoutManager(Apps.getAppsContext());
         rvWeather.setLayoutManager(layoutManager);
         rvWeather.setHasFixedSize(true);
@@ -108,11 +122,13 @@ public class CitiesTempFragment extends Fragment {
 
         getWeatherData();
         srlWeather.setOnRefreshListener(this::getWeatherData);
-        tvEventRetry.setOnClickListener(v -> {
-            dataLoaderStatus = false;
-            Apps.dataLoaderStart(progressDialog, getString(R.string.waiting_msg), true);
-            getWeatherData();
-        });
+    }
+
+    @OnClick(R.id.tv_weather_retry)
+    void retry() {
+        dataLoaderStatus = false;
+        Apps.dataLoaderStart(progressDialog, getString(R.string.waiting_msg), true);
+        getWeatherData();
     }
 
     private void getWeatherData() {
@@ -142,6 +158,8 @@ public class CitiesTempFragment extends Fragment {
                     w.setWind(ww.getWind());
                     w.setSys(ww.getSys());
                     w.setClouds(ww.getClouds());
+
+                    w.setWeathersList(ww.getWeathersList());
 
                     weatherList.add(w);
                 }

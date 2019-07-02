@@ -14,4 +14,9 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         Apps.redirect(SplashActivity.this, MainActivity.class);
     }
+
+    @Override
+    public void onBackPressed() {
+
+    }
 }

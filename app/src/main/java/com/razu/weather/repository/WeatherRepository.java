@@ -8,6 +8,7 @@ import com.razu.weather.model.Weather;
 import com.razu.weather.service.WeatherService;
 import com.razu.weather.service.RetrofitInstance;
 import com.razu.weather.service.WeatherResponse;
+import com.razu.weather.util.WeatherApi;
 
 import java.util.List;
 
@@ -15,18 +16,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
-public class WeatherRepository {
+public class WeatherRepository implements WeatherApi {
 
     private static final String TAG = "WeatherRepository";
     private Application application;
     private MutableLiveData<List<Weather>> weatherMutableLiveData;
     private WeatherService weatherService;
-
-    double lat = 23.68;
-    double lon = 90.35;
-    String BASE_URL = "http://api.openweathermap.org/";
-    String APP_ID = "e384f9ac095b2109c751d95296f8ea76";
 
     public WeatherRepository(Application application) {
         this.application = application;
@@ -37,7 +32,7 @@ public class WeatherRepository {
     }
 
     public MutableLiveData<List<Weather>> getWeatherData() {
-        weatherService.geWeatherData(lat, lon, 50, APP_ID).enqueue(new Callback<WeatherResponse>() {
+        weatherService.geWeatherData(LAT, LNG, COUNT, APP_ID).enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
                 if (response.code() == 200) {

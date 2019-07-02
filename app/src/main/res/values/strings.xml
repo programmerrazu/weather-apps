@@ -5,5 +5,6 @@
     <string name="dismiss">Dismiss</string>
     <string name="retry">Retry</string>
     <string name="no_network2">We\'re having difficulty connecting to \n the server. Check your connection or \n try again later.</string>
+    <string name="back_press">Press back again to exist</string>
 
 </resources>

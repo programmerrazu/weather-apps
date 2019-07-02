@@ -2,7 +2,9 @@ package com.razu.weather.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Weathers {
+import java.io.Serializable;
+
+public class Weathers implements Serializable {
 
     @SerializedName("id")
     private int id;

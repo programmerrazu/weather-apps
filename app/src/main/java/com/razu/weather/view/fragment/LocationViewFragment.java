@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.razu.weather.R;
+import com.razu.weather.interfaces.FragmentChanger;
 import com.razu.weather.model.Weather;
 
 import butterknife.Bind;
@@ -31,6 +33,7 @@ public class LocationViewFragment extends Fragment {
     private SupportMapFragment mapFragment;
     private GoogleMap mapLocation;
     private Weather weather;
+    private FragmentChanger changer;
 
     @Bind(R.id.tv_city)
     TextView tvCity;
@@ -78,14 +81,31 @@ public class LocationViewFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.changer = (FragmentChanger) context;
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changer.onChangeFragment(CitiesTempFragment.getInstance());
+                toolbar.setNavigationIcon(null);
+                toolbar.setNavigationOnClickListener(null);
+            }
+        });
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             weather = (Weather) bundle.getSerializable("weather");
 
             tvCity.setText(weather.getName());
-            tvWeather.setText("Clear Sky");
+            tvWeather.setText(weather.getWeathersList().get(0).getMain());
             tvHum.setText("Humidity : " + weather.getMain().getHumidity());
             tvWind.setText("Wind Speed : " + weather.getWind().getSpeed());
             tvMaxTemp.setText("Max Temp : " + weather.getMain().getTempMax());
