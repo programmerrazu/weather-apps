@@ -14,9 +14,13 @@ import com.razu.weather.view.activity.MainActivity;
 import static android.app.PendingIntent.FLAG_ONE_SHOT;
 
 public class AlarmNotificationReceiver extends BroadcastReceiver {
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        context.sendBroadcast(new Intent("send_notification"));
+
+        /*
         // here need be to call weather api for Current Temperature
         float cTemp = 30;
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
@@ -40,5 +44,6 @@ public class AlarmNotificationReceiver extends BroadcastReceiver {
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1, builder.build());
+        */
     }
 }

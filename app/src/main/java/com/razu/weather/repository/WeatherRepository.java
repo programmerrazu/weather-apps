@@ -21,12 +21,16 @@ public class WeatherRepository implements WeatherApi {
     private static final String TAG = "WeatherRepository";
     private Application application;
     private MutableLiveData<List<Weather>> weatherMutableLiveData;
+    private MutableLiveData<WeatherResponse> weatherLiveData;
     private WeatherService weatherService;
 
     public WeatherRepository(Application application) {
         this.application = application;
         if (weatherMutableLiveData == null) {
             weatherMutableLiveData = new MutableLiveData<>();
+        }
+        if (weatherLiveData == null) {
+            weatherLiveData = new MutableLiveData<>();
         }
         weatherService = RetrofitInstance.getRetrofitInstance(BASE_URL).create(WeatherService.class);
     }
@@ -37,7 +41,6 @@ public class WeatherRepository implements WeatherApi {
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
                 if (response.code() == 200) {
                     WeatherResponse weather = response.body();
-                    Log.i(TAG, "data " + weather);
                     assert weather != null;
                     weatherMutableLiveData.setValue(weather.getWeatherList());
                 }
@@ -45,9 +48,28 @@ public class WeatherRepository implements WeatherApi {
 
             @Override
             public void onFailure(Call<WeatherResponse> call, Throwable t) {
-                Log.i(TAG, "adsad " + t.getMessage());
+                Log.i(TAG, "error " + t.getMessage());
             }
         });
         return weatherMutableLiveData;
+    }
+
+    public MutableLiveData<WeatherResponse> getCurrentWeatherData(double lat, double lng) {
+        weatherService.geCurrentWeatherData(lat, lng, APP_ID).enqueue(new Callback<WeatherResponse>() {
+            @Override
+            public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
+                if (response.code() == 200) {
+                    WeatherResponse weather = response.body();
+                    assert weather != null;
+                    weatherLiveData.setValue(weather);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WeatherResponse> call, Throwable t) {
+                Log.i(TAG, "error " + t.getMessage());
+            }
+        });
+        return weatherLiveData;
     }
 }

@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 
 import com.razu.weather.model.Weather;
 import com.razu.weather.repository.WeatherRepository;
+import com.razu.weather.service.WeatherResponse;
 
 import java.util.List;
 
@@ -21,5 +22,9 @@ public class WeatherViewModel extends AndroidViewModel {
 
     public MutableLiveData<List<Weather>> getWeatherResponseData() {
         return weatherRepository.getWeatherData();
+    }
+
+    public MutableLiveData<WeatherResponse> getCurrentWeatherResponseData(double lat, double lng) {
+        return weatherRepository.getCurrentWeatherData(lat, lng);
     }
 }

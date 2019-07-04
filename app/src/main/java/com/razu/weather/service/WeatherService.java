@@ -8,4 +8,7 @@ public interface WeatherService {
 
     @GET("data/2.5/find?")
     Call<WeatherResponse> geWeatherData(@Query("lat") double lat, @Query("lon") double lng, @Query("cnt") int count, @Query("appid") String appId);
+
+    @GET("data/2.5/weather?")
+    Call<WeatherResponse> geCurrentWeatherData(@Query("lat") double lat, @Query("lon") double lng, @Query("appid") String appId);
 }
